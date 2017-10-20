@@ -1,26 +1,17 @@
 package main
 
 import (
-	"net/http"
-	"github.com/gorilla/mux"
-	"log"
-	"fmt"
+	"github.com/gin-gonic/gin"
+	"missevan_sso/controller"
 )
 
 func main() {
-	r := mux.NewRouter()
-	r.Path("/{category}").
-		HandlerFunc(HomeHandler)
-	log.Fatal(http.ListenAndServe(":8080", r))
-}
+	r := gin.New()
 
-func Middleware(h http.Handler) http.Handler {
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 
-}
+	controller.BaseController(r)
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	w.WriteHeader(http.StatusOK)
-	fmt.Println(vars)
-	fmt.Fprintf(w, "Category: %v\n", vars["category"])
+	r.Run(":3000")
 }
