@@ -9,7 +9,9 @@
 To install libraries, run:
 
 ```shell
-go get github.com/gin-gonic/gin
+go get -u github.com/gin-gonic/gin
+go get -u github.com/go-sql-driver/mysql
+go get -u github.com/jmoiron/sqlx
 ```
 
 

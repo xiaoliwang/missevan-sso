@@ -3,26 +3,58 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"missevan_sso/model"
 )
 
-func v1controller(r *gin.Engine) {
-	v1 := r.Group("/v1")
+func apiController(r *gin.Engine) {
+	api := r.Group("/api")
+	// api.Use(AuthRequired())
 	{
-		v1.POST("/login", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"success": true,
-				"message": "login succeed",
-			})
-		})
+		v1 := api.Group("/v1")
+		{
+			// 登录接口
+			v1.POST("/loginJson", func(c *gin.Context) {
+				var form model.LoginForm
 
-		v1.POST("/logout", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"success": true,
-				"message": "logout succeed",
+				if err := c.ShouldBindJSON(&form); err == nil {
+					if form.Account == "jiepengthegreat@126.com" &&
+						form.Password == "cao123456" {
+						names := []string{"lena", "austin", "foo"}
+						c.SecureJSON(http.StatusOK, names)
+						c.Writer.Header().Set("fuck", "haha")
+					} else {
+						c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
+					}
+				} else {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				}
 			})
-		})
 
-		user := v1.Group("/user")
+			v1.POST("/loginForm", func(c *gin.Context) {
+				var form model.LoginForm
+
+				if err := c.ShouldBind(&form); err == nil {
+					if form.Account == "jiepengthegreat@126.com" &&
+						form.Password == "cao123456" {
+						c.JSON(http.StatusOK, gin.H{"status": "you are logged in"})
+					} else {
+						c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
+					}
+				} else {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				}
+			})
+
+			// 登出接口
+			v1.POST("/logout", func(c *gin.Context) {
+				c.JSON(http.StatusOK, gin.H{
+					"success": true,
+					"message": "logout succeed",
+				})
+			})
+		}
+
+		/*user := v1.Group("/user")
 		{
 			user.GET("/info/:name", func(c *gin.Context) {
 				name := c.Param("name")
@@ -53,6 +85,6 @@ func v1controller(r *gin.Engine) {
 					"nick":    nick,
 				})
 			})
-		}
+		}*/
 	}
 }
