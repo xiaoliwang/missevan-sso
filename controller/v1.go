@@ -4,11 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"missevan_sso/model"
+	"missevan_sso/middleware"
 )
 
 func apiController(r *gin.Engine) {
 	api := r.Group("/api")
-	// api.Use(AuthRequired())
+	api.Use(middleware.CheckAuth())
 	{
 		v1 := api.Group("/v1")
 		{
@@ -20,7 +21,7 @@ func apiController(r *gin.Engine) {
 					if form.Account == "jiepengthegreat@126.com" &&
 						form.Password == "cao123456" {
 						names := []string{"lena", "austin", "foo"}
-						c.SecureJSON(http.StatusOK, names)
+						c.Set("body", names)
 						c.Writer.Header().Set("fuck", "haha")
 					} else {
 						c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
@@ -53,38 +54,5 @@ func apiController(r *gin.Engine) {
 				})
 			})
 		}
-
-		/*user := v1.Group("/user")
-		{
-			user.GET("/info/:name", func(c *gin.Context) {
-				name := c.Param("name")
-				c.String(http.StatusOK, "Hello %s", name)
-			})
-
-			user.GET("/info/:name/*action", func(c *gin.Context) {
-				name := c.Param("name")
-				action := c.Param("action")
-				message := name + " is " + action
-				c.String(http.StatusOK, message)
-			})
-
-			user.GET("/welcome", func(c *gin.Context) {
-				firstname := c.DefaultQuery("fistname", "Guest")
-				lastname := c.Query("lastname")
-
-				c.String(http.StatusOK, "Hello %s %s", firstname, lastname)
-			})
-
-			user.POST("/form_post", func(c *gin.Context) {
-				message := c.PostForm("message")
-				nick := c.DefaultPostForm("nick", "anonymous")
-
-				c.JSON(200, gin.H{
-					"status":  "posted",
-					"message": message,
-					"nick":    nick,
-				})
-			})
-		}*/
 	}
 }
